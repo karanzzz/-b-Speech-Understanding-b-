@@ -16,8 +16,8 @@ def waveform_to_frames(waveform, frame_length, step):
     For every n and t such that 0 <= t*step+n <= N-1, it should be the case that 
        frames[n,t] = waveform[t*step+n]
     '''
-    raise RuntimeError("You need to change this part")
-
+    frames = np.array([waveform[t*step:t*step+frame_length] for t in range((len(waveform)-frame_length)//step + 1)])
+    return frames
 def frames_to_stft(frames):
     '''
     Take the FFT of every column of the frames matrix.
@@ -28,7 +28,8 @@ def frames_to_stft(frames):
     @returns:
     stft (np.ndarray((frame_length,num_frames))) - the STFT (complex-valued)
     '''
-    raise RuntimeError("You need to change this part")
+    stft = np.fft.fft(frames, axis=0)
+    return stft
 
 def stft_to_spectrogram(stft):
     '''
@@ -46,6 +47,8 @@ def stft_to_spectrogram(stft):
     np.amax(spectrogram) should be 0dB.
     np.amin(spectrogram) should be no smaller than -60dB.
     '''
-    raise RuntimeError("You need to change this part")
+    spectrogram = 20 * np.log10(np.abs(stft))
+    spectrogram = np.clip(spectrogram, a_min=-60, a_max=None)
+    return spectrogram
 
 
