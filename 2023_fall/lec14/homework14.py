@@ -1,4 +1,7 @@
-import datetime, gtts, bs4, random, speech_recognition
+import datetime
+import gtts
+import random
+import speech_recognition as sr
 
 def what_time_is_it(lang, filename):
     '''
@@ -8,7 +11,14 @@ def what_time_is_it(lang, filename):
     lang (str) - language in which to speak
     filename (str) - the filename into which the audio should be recorded
     '''
-    raise RuntimeError("You need to write this part!")
+    # Get the current time
+    current_time = datetime.datetime.now().strftime("%H:%M")
+    
+    # Convert the time to speech
+    tts = gtts.gTTS(text=f"It is {current_time}", lang=lang)
+    
+    # Save the speech to a file
+    tts.save(filename)
     
 def tell_me_a_joke(lang, audiofile):
     '''
@@ -19,7 +29,22 @@ def tell_me_a_joke(lang, audiofile):
     lang (str) - language
     audiofile (str) - audiofile in which to record the joke
     '''
-    raise RuntimeError("You need to write this part!")
+    # List of jokes
+    jokes = [
+        "Why don't scientists trust atoms? Because they make up everything!",
+        "What did one plate say to the other plate? Dinner's on me!",
+        "Why did the scarecrow win an award? Because he was outstanding in his field!",
+        # Add more jokes as needed
+    ]
+    
+    # Select a random joke
+    joke = random.choice(jokes)
+    
+    # Convert the joke to speech
+    tts = gtts.gTTS(text=joke, lang=lang)
+    
+    # Save the speech to a file
+    tts.save(audiofile)
 
 def what_day_is_it(lang, audiofile):
     '''
@@ -32,7 +57,16 @@ def what_day_is_it(lang, audiofile):
     @returns:
     url (str) - URL that you can look up in order to see the calendar for this month and year
     '''
-    raise RuntimeError("You need to write this part!")
+    current_date = datetime.datetime.now().strftime("%A, %B %d, %Y")
+    
+    # Convert the date to speech
+    tts = gtts.gTTS(text=f"Today is {current_date}", lang=lang)
+    
+    # Save the speech to a file
+    tts.save(audiofile)
+    
+    # Return a URL to a calendar website
+    return "https://www.calendar.com"
 
 def personal_assistant(lang, filename):
     '''
@@ -45,4 +79,30 @@ def personal_assistant(lang, filename):
     lang (str) - language
     filename (str) - filename in which to store the result
     '''
-    raise RuntimeError("You need to write this part!")
+    # Initialize recognizer
+    recognizer = sr.Recognizer()
+    
+    # Start listening
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = recognizer.listen(source)
+    
+    try:
+        # Recognize speech
+        text = recognizer.recognize_google(audio, language=lang)
+        print("You said:", text)
+        
+        # Check for request
+        if "time" in text:
+            what_time_is_it(lang, filename)
+        elif "day" in text:
+            what_day_is_it(lang, filename)
+        elif "joke" in text:
+            tell_me_a_joke(lang, filename)
+        else:
+            print("Sorry, I didn't understand that.")
+    
+    except sr.UnknownValueError:
+        print("Sorry, I couldn't understand what you said.")
+    except sr.RequestError as e:
+        print(f"Could not request results; {e}")
